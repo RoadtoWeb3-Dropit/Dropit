@@ -1,5 +1,5 @@
 {
-  "name": "drop-it",
+  "name": "dropit",
   "private": true,
   "scripts": {
     "dev": "next dev",
