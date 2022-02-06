@@ -24,10 +24,11 @@ export default function Dashboard() {
       <h1>Dashboard</h1>
       <Link href="/">Home</Link>
       {account ?
-        <button onClick={connectMetaMask}>Connect MetaMask</button>
-      :
         <p>Welcome</p>
+      :
+        <button onClick={connectMetaMask}>Connect MetaMask</button>
       }
+      <Link href="/admin/admin">Admin</Link>
     </div>
   )
 }
