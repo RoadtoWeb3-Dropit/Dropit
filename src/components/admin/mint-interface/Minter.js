@@ -16,11 +16,19 @@ import {
   HStack,
   Text,
 } from "@chakra-ui/react";
+import { ethers } from "ethers";
+import Dropit from "../../../artifacts//contracts/Dropit.sol/Dropit.json";
+import { CONTRACT_ADDRESS } from "../../../../constants";
 
 const Minter = (props) => {
   //State variables
+  const provider = "";
+  const signer = "";
+  const contract = "";
+
   const [walletAddress, setWallet] = useState("");
   const [status, setStatus] = useState("");
+  const [newMetadata, setNewMetadata] = useState({});
 
   const [nftName, setNftName] = useState("");
   const [nftDescription, setNftDescription] = useState("");
@@ -29,6 +37,39 @@ const Minter = (props) => {
   const [dropName, setDropName] = useState("");
   const [dropDesc, setDropDesc] = useState("");
   const [dropType, setDropType] = useState("");
+
+  if (walletAddress) {
+    // Initialize contract
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    signer = provider.getSigner();
+    contract = new ethers.Contract(CONTRACT_ADDRESS, Dropit.abi, signer);
+  }
+
+  const addWalletToDB = () => {
+    // logic to add wallet addr to db
+    console.log(walletAddress);
+  };
+
+  const mintToken = async () => {
+    const newMetadata = {
+      dropName: { dropName },
+      dropDesc: { dropDesc },
+      dropType: { dropType },
+      nftName: { nftName },
+      nftDescription: { nftDescription },
+      nftUrl: { nftUrl },
+    };
+
+    const connection = contract.connect(signer);
+    const addr = walletAddress;
+    const result = await contract.payToMint(addr, newMetadata, {
+      value: ethers.utils.parseEther("0.05"),
+    });
+
+    await result.wait();
+    const check = await contract.isContentOwned(newMetadata);
+    console.log(check);
+  };
 
   useEffect(async () => {
     const { address, status } = await getCurrentWalletConnected();
@@ -69,16 +110,11 @@ const Minter = (props) => {
     setWallet(walletResponse.address);
   };
 
-  const onMintPressed = async () => {
-    const { status } = await mintNFT(url, name, description);
-    setStatus(status);
-  };
-
   return (
     <VStack>
-      <HStack>
-        <Container maxW="container.lg">
-          <FormControl isRequired>
+      <FormControl isRequired>
+        <HStack>
+          <Container maxW="container.lg">
             <h1>Create a new drop here!</h1>
             <FormLabel htmlFor="drop-name">Drop Name</FormLabel>
 
@@ -105,21 +141,19 @@ const Minter = (props) => {
               <option>Controlled</option>
               <option>Instant</option>
             </Select>
-            <Button mt={4} colorScheme="blue" type="submit">
-              Create
-            </Button>
-          </FormControl>
-          <h1>
-            {dropName}
-            <br />
-            {dropDesc}
-            <br />
-            {dropType}
-          </h1>
-        </Container>
 
-        <Container maxW="container.lg">
-          <FormControl isRequired>
+            <h1>
+              {dropName}
+              <br />
+              {dropDesc}
+              <br />
+              {dropType}
+            </h1>
+          </Container>
+
+          <Container maxW="container.lg">
+            <br />
+            <br />
             <h1>Create an NFT for your drop!</h1>
             <FormLabel htmlFor="nftname">NFT Name</FormLabel>
 
@@ -143,19 +177,36 @@ const Minter = (props) => {
               placeholder="🖼 Link to asset:"
               onChange={(event) => setNftURL(event.target.value)}
             />
-            <Button mt={4} colorScheme="blue" type="submit">
-              Create
-            </Button>
-          </FormControl>
-          <h1>
-            {nftName}
-            <br />
-            {nftDescription}
-            <br />
-            {nftUrl}
-          </h1>
-        </Container>
-      </HStack>
+            {dropType == "Controlled" ? (
+              <Button
+                mt={4}
+                colorScheme="blue"
+                type="submit"
+                onClick={addWalletToDB}
+              >
+                Create
+              </Button>
+            ) : (
+              <Button
+                mt={4}
+                colorScheme="blue"
+                type="submit"
+                onClick={mintToken}
+              >
+                Create
+              </Button>
+            )}
+
+            <h1>
+              {nftName}
+              <br />
+              {nftDescription}
+              <br />
+              {nftUrl}
+            </h1>
+          </Container>
+        </HStack>
+      </FormControl>
     </VStack>
   );
 };
