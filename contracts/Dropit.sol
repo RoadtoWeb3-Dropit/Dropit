@@ -66,4 +66,23 @@ contract Dropit is ERC721, ERC721URIStorage, Ownable {
     function count() public view returns (uint256) {
         return _tokenIdCounter.current();
     }
+
+    // Custom function to mint multiple NFTs
+    function payToMintBatch(
+        address[] memory recipients,
+        string[] memory metadataArray
+    ) public payable {
+        require (msg.value >= recipients.length * 0.05 ether, 'Need to pay up!');
+
+        // Loop through and mint
+        for (uint i = 0; i < recipients.length; i++) {
+            require(existingURIs[metadataArray[i]] != 1, 'NFT already minted!');
+            uint256 newItemId = _tokenIdCounter.current();
+            _tokenIdCounter.increment();
+            existingURIs[metadataArray[i]] = 1;
+
+            _mint(recipients[i], newItemId);
+            _setTokenURI(newItemId, metadataArray[i]);
+        }
+    }
 }
