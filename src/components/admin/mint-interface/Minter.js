@@ -44,10 +44,32 @@ const Minter = (props) => {
     signer = provider.getSigner();
     contract = new ethers.Contract(CONTRACT_ADDRESS, Dropit.abi, signer);
   }
-
-  const addWalletToDB = () => {
+  const uploadToDataBase = () => {
     // logic to add wallet addr to db
-    console.log(walletAddress);
+    // logic to add following info to db
+
+    /*
+    DB:
+    name: Drop name
+    desc: Drop desc
+    recWallets: [String]
+    metada: {
+      name:
+      desc:
+      imgLink:
+    }
+    */
+
+    const newMetadata = {
+      dropName: { dropName },
+      dropDesc: { dropDesc },
+      dropType: { dropType },
+      nftName: { nftName },
+      nftDescription: { nftDescription },
+      nftUrl: { nftUrl },
+    };
+
+    console.log(newMetadata);
   };
 
   const mintToken = async () => {
@@ -62,7 +84,7 @@ const Minter = (props) => {
 
     const connection = contract.connect(signer);
     const addr = walletAddress;
-    const result = await contract.payToMint(addr, newMetadata, {
+    const result = await contract.payToMint(addr, newNFTMetadata, {
       value: ethers.utils.parseEther("0.05"),
     });
 
@@ -74,7 +96,6 @@ const Minter = (props) => {
   useEffect(async () => {
     const { address, status } = await getCurrentWalletConnected();
     setWallet(address);
-
 
     addWalletListener();
   }, []);
@@ -88,7 +109,7 @@ const Minter = (props) => {
           setWallet("");
         }
       });
-    } 
+    }
   }
 
   const connectWalletPressed = async () => {
@@ -164,25 +185,15 @@ const Minter = (props) => {
               placeholder="🖼 Link to asset:"
               onChange={(event) => setNftURL(event.target.value)}
             />
-            {dropType == "Controlled" ? (
-              <Button
-                mt={4}
-                colorScheme="blue"
-                type="submit"
-                onClick={addWalletToDB}
-              >
-                Create
-              </Button>
-            ) : (
-              <Button
-                mt={4}
-                colorScheme="blue"
-                type="submit"
-                onClick={mintToken}
-              >
-                Create
-              </Button>
-            )}
+
+            <Button
+              mt={4}
+              colorScheme="blue"
+              type="submit"
+              onClick={uploadToDataBase}
+            >
+              Create NFT Drop
+            </Button>
 
             <h1>
               {nftName}
@@ -192,14 +203,21 @@ const Minter = (props) => {
               {nftUrl}
             </h1>
           </Container>
-        <h1>{walletAddress? "" :  (<p>
-          {" "}
-          🦊{" "}
-          <a target="_blank" href={`https://metamask.io/download.html`}>
-            You must install Metamask, a virtual Ethereum wallet, in your
-            browser. Once installed, click the connect button on the top of the page!
-          </a>
-        </p>)}</h1>
+          <h1>
+            {walletAddress ? (
+              ""
+            ) : (
+              <p>
+                {" "}
+                🦊{" "}
+                <a target="_blank" href={`https://metamask.io/download.html`}>
+                  You must install Metamask, a virtual Ethereum wallet, in your
+                  browser. Once installed, click the connect button on the top
+                  of the page!
+                </a>
+              </p>
+            )}
+          </h1>
         </HStack>
       </FormControl>
     </VStack>
