@@ -2,6 +2,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { ethers } from "ethers"
 import Dropit from '../src/artifacts/contracts/Dropit.sol/Dropit.json'
+import { CONTRACT_ADDRESS } from '../constants'
 
 // Initialize contract
 const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -54,7 +55,7 @@ export default function Dashboard() {
       :
         <button onClick={connectMetaMask}>Connect MetaMask</button>
       }
-      <Link href="/admin/admin">Admin</Link>
+      <Link href="/admin">Admin</Link>
     </div>
   )
 }
