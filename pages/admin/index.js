@@ -1,7 +1,7 @@
 import { useState } from "react";
-import DropCard from "./drop_card/drop_card";
+import DropCard from "../../src/components/admin/drop_card/drop_card";
 
-import styles from "./admin.module.css";
+import styles from "../../styles/admin.module.css";
 
 export default function admin() {
     const [drops, setDrops] = useState([{name:"Dropped Down Bad", type: "Timed"}]);
