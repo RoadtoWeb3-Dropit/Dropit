@@ -19,7 +19,7 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 module.exports = {
   solidity: "0.8.4",
   paths: {
-    artifacts: './src/artifacts',
+    artifacts: "./src/artifacts",
   },
   // https://hardhat.org/metamask-issue.html
   networks: {
@@ -27,8 +27,8 @@ module.exports = {
       chainId: 1337,
     },
     matic: {
-      url: 'https://polygon-mumbai.g.alchemy.com/v2/dgx3YHvSLx3C2srEJuMeL8Kso9Ze5QUQ',
-      accounts: ['DEPLOYER_WALLET_PRIVATE_KEY'],
-    }
+      url: "https://polygon-mumbai.g.alchemy.com/v2/dgx3YHvSLx3C2srEJuMeL8Kso9Ze5QUQ",
+      accounts: ["DEPLOYER_WALLET_PRIVATE_KEY"],
+    },
   },
 };
