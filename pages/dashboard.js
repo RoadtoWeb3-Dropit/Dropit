@@ -4,10 +4,9 @@ import { ethers } from "ethers"
 import Dropit from '../src/artifacts/contracts/Dropit.sol/Dropit.json'
 
 // Initialize contract
-const contractAddress = '0xf209FD3AfC255c2e3da59B3D5ba52293F2425538'
 const provider = new ethers.providers.Web3Provider(window.ethereum)
 const signer = provider.getSigner()
-const contract = new ethers.Contract(contractAddress, Dropit.abi, signer)
+const contract = new ethers.Contract(CONTRACT_ADDRESS, Dropit.abi, signer)
 
 export default function Dashboard() {
   const [account, setAccount] = useState('')
