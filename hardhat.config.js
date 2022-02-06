@@ -1,4 +1,8 @@
 require("@nomiclabs/hardhat-waffle");
+require("dotenv").config()
+
+const ALCHEMY_MUMBAI_RPC_URL = process.env.ALCHEMY_MUMBAI_RPC_URL;
+const DEPLOYER_WALLET_PRIVATE_KEY = process.env.DEPLOYER_WALLET_PRIVATE_KEY;
 
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
@@ -27,8 +31,8 @@ module.exports = {
       chainId: 1337,
     },
     matic: {
-      url: "https://polygon-mumbai.g.alchemy.com/v2/dgx3YHvSLx3C2srEJuMeL8Kso9Ze5QUQ",
-      accounts: ["DEPLOYER_WALLET_PRIVATE_KEY"],
+      url: ALCHEMY_MUMBAI_RPC_URL,
+      accounts: [DEPLOYER_WALLET_PRIVATE_KEY],
     },
   },
 };
