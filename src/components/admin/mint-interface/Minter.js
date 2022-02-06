@@ -4,14 +4,31 @@ import {
   getCurrentWalletConnected,
 } from "../../../../pages/interact";
 import styles from "./minter.module.css";
+import {
+  VStack,
+  Box,
+  Button,
+  Container,
+  FormControl,
+  FormLabel,
+  Select,
+  Input,
+  HStack,
+  Text,
+} from "@chakra-ui/react";
 
 const Minter = (props) => {
   //State variables
   const [walletAddress, setWallet] = useState("");
   const [status, setStatus] = useState("");
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [url, setURL] = useState("");
+
+  const [nftName, setNftName] = useState("");
+  const [nftDescription, setNftDescription] = useState("");
+  const [nftUrl, setNftURL] = useState("");
+
+  const [dropName, setDropName] = useState("");
+  const [dropDesc, setDropDesc] = useState("");
+  const [dropType, setDropType] = useState("");
 
   useEffect(async () => {
     const { address, status } = await getCurrentWalletConnected();
@@ -58,45 +75,88 @@ const Minter = (props) => {
   };
 
   return (
-    <div>
-      <br></br>
-      <h1 id="title" className={styles.title}>
-        🧙‍♂️ NFT Minter
-      </h1>
-      <p>
-        Simply add your asset's link, name, and description, then press "Mint."
-      </p>
-      <form>
-        <h2>🖼 Link to asset: </h2>
-        <input
-          type="text"
-          placeholder="e.g. https://gateway.pinata.cloud/ipfs/<hash>"
-          onChange={(event) => setURL(event.target.value)}
-        />
-        <h2>🤔 Name: </h2>
-        <input
-          type="text"
-          placeholder="e.g. My first NFT!"
-          onChange={(event) => setName(event.target.value)}
-        />
-        <h2>✍️ Description: </h2>
-        <input
-          type="text"
-          placeholder="e.g. Even cooler than cryptokitties ;)"
-          onChange={(event) => setDescription(event.target.value)}
-        />
-      </form>
-      <button
-        id="mintButton"
-        className={styles.mintButton}
-        onClick={onMintPressed}
-      >
-        Mint NFT
-      </button>
-      <p id="status" className={styles.status}>
-        {status}
-      </p>
-    </div>
+    <VStack>
+      <HStack>
+        <Container maxW="container.lg">
+          <FormControl isRequired>
+            <h1>Create a new drop here!</h1>
+            <FormLabel htmlFor="drop-name">Drop Name</FormLabel>
+
+            <Input
+              id="drop-name"
+              placeholder="Enter drop name"
+              onChange={(event) => setDropName(event.target.value)}
+            />
+
+            <FormLabel htmlFor="drop-desc">Drop Description</FormLabel>
+
+            <Input
+              id="drop-desc"
+              placeholder="Enter drop desciption"
+              onChange={(event) => setDropDesc(event.target.value)}
+            />
+
+            <FormLabel htmlFor="drop-type">Drop Type</FormLabel>
+            <Select
+              id="droptype"
+              defaultValue="Controlled"
+              onChange={(event) => setDropType(event.target.value)}
+            >
+              <option>Controlled</option>
+              <option>Instant</option>
+            </Select>
+            <Button mt={4} colorScheme="blue" type="submit">
+              Create
+            </Button>
+          </FormControl>
+          <h1>
+            {dropName}
+            <br />
+            {dropDesc}
+            <br />
+            {dropType}
+          </h1>
+        </Container>
+
+        <Container maxW="container.lg">
+          <FormControl isRequired>
+            <h1>Create an NFT for your drop!</h1>
+            <FormLabel htmlFor="nftname">NFT Name</FormLabel>
+
+            <Input
+              id="nftname"
+              placeholder="🤔 Name:"
+              onChange={(event) => setNftName(event.target.value)}
+            />
+
+            <FormLabel htmlFor="nft-desc">NFT Description</FormLabel>
+
+            <Input
+              id="nft-desc"
+              placeholder="✍️ Description:"
+              onChange={(event) => setNftDescription(event.target.value)}
+            />
+
+            <FormLabel htmlFor="nft-link">NFT Link to Asset</FormLabel>
+            <Input
+              id="nft-url"
+              placeholder="🖼 Link to asset:"
+              onChange={(event) => setNftURL(event.target.value)}
+            />
+            <Button mt={4} colorScheme="blue" type="submit">
+              Create
+            </Button>
+          </FormControl>
+          <h1>
+            {nftName}
+            <br />
+            {nftDescription}
+            <br />
+            {nftUrl}
+          </h1>
+        </Container>
+      </HStack>
+    </VStack>
   );
 };
 

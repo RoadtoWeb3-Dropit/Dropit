@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ethers } from "ethers";
@@ -15,13 +14,12 @@ import {
   Box,
   Button,
 } from "@chakra-ui/react";
-import { CONTRACT_ADDRESS } from '../constants'
+import { CONTRACT_ADDRESS } from "../constants";
 
 // Initialize contract
-const provider = new ethers.providers.Web3Provider(window.ethereum)
-const signer = provider.getSigner()
-const contract = new ethers.Contract(CONTRACT_ADDRESS, Dropit.abi, signer)
-
+// const provider = new ethers.providers.Web3Provider(window.ethereum)
+// const signer = provider.getSigner()
+// const contract = new ethers.Contract(CONTRACT_ADDRESS, Dropit.abi, signer)
 
 export default function Dashboard() {
   const [account, setAccount] = useState("");
@@ -68,17 +66,17 @@ export default function Dashboard() {
       );
     }
   }
-  const mintToken = async () => {
-    const connection = contract.connect(signer);
-    const addr = connection.address;
-    const result = await contract.payToMint(addr, newMetadata, {
-      value: ethers.utils.parseEther("0.05"),
-    });
+  // const mintToken = async () => {
+  //   const connection = contract.connect(signer);
+  //   const addr = connection.address;
+  //   const result = await contract.payToMint(addr, newMetadata, {
+  //     value: ethers.utils.parseEther("0.05"),
+  //   });
 
-    await result.wait();
-    const check = await contract.isContentOwned(newMetadata);
-    console.log(check);
-  };
+  //   await result.wait();
+  //   const check = await contract.isContentOwned(newMetadata);
+  //   console.log(check);
+  // };
 
   return (
     <VStack position="absolute" height="100%" width="100%">
