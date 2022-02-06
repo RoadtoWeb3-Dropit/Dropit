@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ethers } from "ethers";
@@ -14,12 +15,13 @@ import {
   Box,
   Button,
 } from "@chakra-ui/react";
+import { CONTRACT_ADDRESS } from '../constants'
 
 // Initialize contract
-const contractAddress = "0xf209FD3AfC255c2e3da59B3D5ba52293F2425538";
-const provider = new ethers.providers.Web3Provider(window.ethereum);
-const signer = provider.getSigner();
-const contract = new ethers.Contract(contractAddress, Dropit.abi, signer);
+const provider = new ethers.providers.Web3Provider(window.ethereum)
+const signer = provider.getSigner()
+const contract = new ethers.Contract(CONTRACT_ADDRESS, Dropit.abi, signer)
+
 
 export default function Dashboard() {
   const [account, setAccount] = useState("");
@@ -124,8 +126,9 @@ export default function Dashboard() {
         </>
       ) : (
         <button onClick={connectMetaMask}>Connect MetaMask</button>
+
       )} */}
-        {/* <Link href="/admin/admin">Admin</Link> */}
+        {/* <Link href="/admin">Admin</Link> */}
       </Box>
     </VStack>
   );
