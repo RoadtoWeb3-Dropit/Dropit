@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import axios from "axios";
 import {
   connectWallet,
   getCurrentWalletConnected,
@@ -27,7 +28,7 @@ const Minter = (props) => {
   const contract = "";
 
   const [walletAddress, setWallet] = useState("");
-  const [status, setStatus] = useState("");
+  const [resData, setResData] = useState("");
   const [newMetadata, setNewMetadata] = useState({});
 
   const [nftName, setNftName] = useState("");
@@ -37,6 +38,7 @@ const Minter = (props) => {
   const [dropName, setDropName] = useState("");
   const [dropDesc, setDropDesc] = useState("");
   const [dropType, setDropType] = useState("");
+  const [dropID, setDropID] = useState("");
 
   if (walletAddress) {
     // Initialize contract
@@ -44,32 +46,33 @@ const Minter = (props) => {
     signer = provider.getSigner();
     contract = new ethers.Contract(CONTRACT_ADDRESS, Dropit.abi, signer);
   }
-  const uploadToDataBase = () => {
-    // logic to add wallet addr to db
-    // logic to add following info to db
+  const uploadToDataBase = async (e) => {
+    // Handler to upload to mongodb
+    e.preventDefault();
 
-    /*
-    DB:
-    name: Drop name
-    desc: Drop desc
-    recWallets: [String]
-    metada: {
-      name:
-      desc:
-      imgLink:
-    }
-    */
-
-    const newMetadata = {
-      dropName: { dropName },
-      dropDesc: { dropDesc },
-      dropType: { dropType },
-      nftName: { nftName },
-      nftDescription: { nftDescription },
-      nftUrl: { nftUrl },
+    const dataForDB = {
+      organizerWallet: walletAddress,
+      registeredWallets: [],
+      dropStatus: false,
+      dropName: dropName,
+      dropDescription: dropDesc,
+      id: dropID,
+      dropType: dropType,
+      metadata: {
+        name: nftName,
+        desc: nftDescription,
+        imgLink: nftUrl,
+      },
     };
 
-    console.log(newMetadata);
+    axios
+      .post("https://backendforweb3.herokuapp.com/drop/", dataForDB)
+      .then((res) => {
+        console.log(res.data);
+        setResData(res.data);
+      });
+
+    console.log(dataForDB);
   };
 
   const mintToken = async () => {
@@ -150,18 +153,25 @@ const Minter = (props) => {
               <option>Instant</option>
             </Select>
 
+            <FormLabel htmlFor="drop-id">Drop ID</FormLabel>
+
+            <Input
+              id="drop-id"
+              placeholder="Enter drop id"
+              onChange={(event) => setDropID(event.target.value)}
+            />
             <h1>
               {dropName}
               <br />
               {dropDesc}
               <br />
               {dropType}
+              <br />
+              {dropID}
             </h1>
           </Container>
 
           <Container maxW="container.lg">
-            <br />
-            <br />
             <h1>Create an NFT for your drop!</h1>
             <FormLabel htmlFor="nftname">NFT Name</FormLabel>
 
@@ -190,7 +200,7 @@ const Minter = (props) => {
               mt={4}
               colorScheme="blue"
               type="submit"
-              onClick={uploadToDataBase}
+              onClick={(e) => uploadToDataBase(e)}
             >
               Create NFT Drop
             </Button>
@@ -220,6 +230,7 @@ const Minter = (props) => {
           </h1>
         </HStack>
       </FormControl>
+      <h1>{resData}</h1>
     </VStack>
   );
 };
