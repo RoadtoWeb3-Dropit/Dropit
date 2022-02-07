@@ -6,7 +6,10 @@ import { connectWallet, getCurrentWalletConnected } from "../interact";
 import Dropit from '../../src/artifacts/contracts/Dropit.sol/Dropit.json'
 import { CONTRACT_ADDRESS } from "../../constants";
 import {
-  Button
+  Button,
+  Flex,
+  Heading,
+  useToast,
 } from "@chakra-ui/react"
 
 // Initialize contract
@@ -17,7 +20,9 @@ var contract;
 export default function Home() {
   const router = useRouter()
   const { drop } = router.query
+  const toast = useToast()
   const [wallet, setWallet] = useState('')
+  const [loading, setLoading] = useState(false)
 
   // TODO: Get drop metadata from API, dummy data for now
   const metadata = JSON.stringify({
@@ -57,30 +62,55 @@ export default function Home() {
   };
 
   const claim = async () => {
-    const result = await contract.payToMint(wallet, metadata, {
-      value: ethers.utils.parseEther("0"),
-    });
-
-    await result.wait();
-    const check = await contract.isContentOwned(metadata);
-    console.log(check ? 'NFT was claimed!' : 'NFT is not claimed :(');
+    try {
+      setLoading(true);
+      const result = await contract.payToMint(wallet, metadata, {
+        value: ethers.utils.parseEther("0"),
+      });
+  
+      await result.wait();
+      setLoading(false);
+      toast({
+        title: 'NFT sent!',
+        description: 'Congrats :)',
+        status: 'success',
+        duration: 9000,
+        isClosable: true,
+      })
+    } catch (err) {
+      setLoading(false);
+      toast({
+        title: 'We ran into an error :(',
+        description: err?.data?.message || 'Please try again later!',
+        status: 'error',
+        duration: 9000,
+        isClosable: true,
+      })
+    }
   };
   
   return (
-    <div>
-      <Button id="walletButton" onClick={connectWalletPressed}>
-        {wallet.length > 0 ? (
-          "Connected: " +
-          String(wallet).substring(0, 6) +
-          "..." +
-          String(wallet).substring(38)
-        ) : (
-          <span>Connect Wallet</span>
-        )}
-      </Button>
-      <h1>Claim your drop for {drop}</h1>
-      <button onClick={claim}>Claim</button>
-      <Link href="/">Home</Link>
-    </div>
+    <Flex
+      align="center"
+      direction="column"
+      justify="center"
+      height="100vh"
+    >
+      <Heading textAlign="center" size="md">Claim your drop for</Heading>
+      <Heading textAlign="center">{drop}</Heading>
+      <Flex gap="20px" mt="3">
+        <Button onClick={connectWalletPressed}>
+          {wallet.length > 0 ? (
+            "Connected: " +
+            String(wallet).substring(0, 6) +
+            "..." +
+            String(wallet).substring(38)
+          ) : (
+            <span>Connect Wallet</span>
+          )}
+        </Button>
+        <Button onClick={claim} isLoading={loading}>Claim</Button>
+      </Flex>
+    </Flex>
   )
 }
