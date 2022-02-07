@@ -1,11 +1,13 @@
 import { useState } from "react";
 import DropCard from "../../src/components/admin/drop_card/drop_card";
 
+import { createDrop } from "../api/admin";
+
 import styles from "../../styles/admin.module.css";
 
 export default function admin() {
-    const [drops, setDrops] = useState([{name:"Dropped Down Bad", type: "Timed"}]);
-
+    const [drops, setDrops] = useState([]);
+// {name:"Dropped Down Bad", type: "Timed"}, {name:"Dropped Down Bad", type: "Timed"}
     const handleSubmit = (e) => {
         e.preventDefault();
         let name = e.target[0].value;
@@ -16,10 +18,17 @@ export default function admin() {
         if (name === "") {
             errField.textContent = "Name cannot be empty.";
         } else {
-            setDrops(drops.push({name, type}));
-            console.log(drops ,"drops");
+            createDrop({ id: "lol", organizerWallet: name, metadata: {foo: "foo"}, dropStatus: false, registeredWallets: []})
+            .then((foo) => {
+                console.log(foo);
+            })
+            // drops.push({ name, type });
+            // let newDrops = [...drops];
+
+            // setDrops(newDrops);
         }
     }
+    console.log(Array.isArray(drops));
 
     return(
         <div className={styles.admin}>
@@ -28,8 +37,10 @@ export default function admin() {
                 <form className={styles.form} onSubmit={(e) => handleSubmit(e)}>
                     <input type="text" placeholder="Drop name"/>
                     <select name="type">
-                        <option value="timed">Timed</option>
-                        <option value="instant">Instant</option>
+                        <option value="sportcheck">Sport Check</option>
+                        <option value="tim_hortons">Tim Hortons</option>
+                        <option value="tim_hortons">Subway</option>
+                        <option value="other">Other</option>
                     </select>
                     <p className={styles.error}></p>
                     <input type="submit" value="Create Drop"/>
