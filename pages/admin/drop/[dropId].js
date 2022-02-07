@@ -6,7 +6,6 @@ import Dropit from '../../../src/artifacts/contracts/Dropit.sol/Dropit.json'
 import { CONTRACT_ADDRESS } from "../../../constants"
 
 // Initialize contract
-var contractAddress;
 var provider;
 var signer;
 var contract;
