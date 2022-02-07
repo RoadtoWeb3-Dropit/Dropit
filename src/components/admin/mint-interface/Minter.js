@@ -8,6 +8,9 @@ import styles from "./minter.module.css";
 import {
   VStack,
   Box,
+  Alert,
+  AlertIcon,
+  useToast,
   Button,
   Container,
   FormControl,
@@ -28,7 +31,7 @@ const Minter = (props) => {
   const contract = "";
 
   const [walletAddress, setWallet] = useState("");
-  const [resData, setResData] = useState("");
+  const [resData, setResData] = useState(false);
   const [newMetadata, setNewMetadata] = useState({});
 
   const [nftName, setNftName] = useState("");
@@ -68,8 +71,7 @@ const Minter = (props) => {
     axios
       .post("https://backendforweb3.herokuapp.com/drop/", dataForDB)
       .then((res) => {
-        console.log(res.data);
-        setResData(res.data);
+        setResData(true);
       });
 
     console.log(dataForDB);
@@ -230,7 +232,17 @@ const Minter = (props) => {
           </h1>
         </HStack>
       </FormControl>
-      <h1>{resData}</h1>
+      {resData ? (
+        <Alert status="success">
+          <AlertIcon />
+          Success! NFT Drop was created!
+        </Alert>
+      ) : (
+        <Alert status="info">
+          <AlertIcon />
+          Fill in your NFT drop details and click create to create your drop!
+        </Alert>
+      )}
     </VStack>
   );
 };
