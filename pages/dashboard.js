@@ -1,8 +1,6 @@
-
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ethers } from "ethers";
-import Dropit from "../src/artifacts/contracts/Dropit.sol/Dropit.json";
+
 import Minter from "../src/components/admin/mint-interface/Minter";
 import { connectWallet, getCurrentWalletConnected } from "./interact.js";
 import {
@@ -15,18 +13,10 @@ import {
   Box,
   Button,
 } from "@chakra-ui/react";
-import { CONTRACT_ADDRESS } from '../constants'
-
-// Initialize contract
-const provider = new ethers.providers.Web3Provider(window.ethereum)
-const signer = provider.getSigner()
-const contract = new ethers.Contract(CONTRACT_ADDRESS, Dropit.abi, signer)
-
 
 export default function Dashboard() {
   const [account, setAccount] = useState("");
   const [balance, setBalance] = useState(0);
-  const [newMetadata, setNewMetadata] = useState("");
 
   const [walletAddress, setWallet] = useState("");
   const [status, setStatus] = useState("");
@@ -49,7 +39,7 @@ export default function Dashboard() {
       window.ethereum.on("accountsChanged", (accounts) => {
         if (accounts.length > 0) {
           setWallet(accounts[0]);
-          setStatus("👆🏽 Write a message in the text-field above.");
+          setStatus("🦊 Connected to Metamask.");
         } else {
           setWallet("");
           setStatus("🦊 Connect to Metamask using the top right button.");
@@ -68,17 +58,6 @@ export default function Dashboard() {
       );
     }
   }
-  const mintToken = async () => {
-    const connection = contract.connect(signer);
-    const addr = connection.address;
-    const result = await contract.payToMint(addr, newMetadata, {
-      value: ethers.utils.parseEther("0.05"),
-    });
-
-    await result.wait();
-    const check = await contract.isContentOwned(newMetadata);
-    console.log(check);
-  };
 
   return (
     <VStack position="absolute" height="100%" width="100%">

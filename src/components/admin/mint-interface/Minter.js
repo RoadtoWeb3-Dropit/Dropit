@@ -1,22 +1,106 @@
 import { useEffect, useState } from "react";
+import axios from "axios";
 import {
   connectWallet,
   getCurrentWalletConnected,
 } from "../../../../pages/interact";
 import styles from "./minter.module.css";
+import {
+  VStack,
+  Box,
+  Alert,
+  AlertIcon,
+  useToast,
+  Button,
+  Container,
+  FormControl,
+  FormLabel,
+  Select,
+  Input,
+  HStack,
+  Text,
+} from "@chakra-ui/react";
+import { ethers } from "ethers";
+import Dropit from "../../../artifacts//contracts/Dropit.sol/Dropit.json";
+import { CONTRACT_ADDRESS } from "../../../../constants";
 
 const Minter = (props) => {
   //State variables
+  const provider = "";
+  const signer = "";
+  const contract = "";
+
   const [walletAddress, setWallet] = useState("");
-  const [status, setStatus] = useState("");
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [url, setURL] = useState("");
+  const [resData, setResData] = useState(false);
+  const [newMetadata, setNewMetadata] = useState({});
+
+  const [nftName, setNftName] = useState("");
+  const [nftDescription, setNftDescription] = useState("");
+  const [nftUrl, setNftURL] = useState("");
+
+  const [dropName, setDropName] = useState("");
+  const [dropDesc, setDropDesc] = useState("");
+  const [dropType, setDropType] = useState("");
+  const [dropID, setDropID] = useState("");
+
+  if (walletAddress) {
+    // Initialize contract
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    signer = provider.getSigner();
+    contract = new ethers.Contract(CONTRACT_ADDRESS, Dropit.abi, signer);
+  }
+  const uploadToDataBase = async (e) => {
+    // Handler to upload to mongodb
+    e.preventDefault();
+
+    const dataForDB = {
+      organizerWallet: walletAddress,
+      registeredWallets: [],
+      dropStatus: false,
+      dropName: dropName,
+      dropDescription: dropDesc,
+      id: dropID,
+      dropType: dropType,
+      metadata: {
+        name: nftName,
+        desc: nftDescription,
+        imgLink: nftUrl,
+      },
+    };
+
+    axios
+      .post("https://backendforweb3.herokuapp.com/drop/", dataForDB)
+      .then((res) => {
+        setResData(true);
+      });
+
+    console.log(dataForDB);
+  };
+
+  const mintToken = async () => {
+    const newMetadata = {
+      dropName: { dropName },
+      dropDesc: { dropDesc },
+      dropType: { dropType },
+      nftName: { nftName },
+      nftDescription: { nftDescription },
+      nftUrl: { nftUrl },
+    };
+
+    const connection = contract.connect(signer);
+    const addr = walletAddress;
+    const result = await contract.payToMint(addr, newNFTMetadata, {
+      value: ethers.utils.parseEther("0.05"),
+    });
+
+    await result.wait();
+    const check = await contract.isContentOwned(newMetadata);
+    console.log(check);
+  };
 
   useEffect(async () => {
     const { address, status } = await getCurrentWalletConnected();
     setWallet(address);
-    setStatus(status);
 
     addWalletListener();
   }, []);
@@ -26,23 +110,10 @@ const Minter = (props) => {
       window.ethereum.on("accountsChanged", (accounts) => {
         if (accounts.length > 0) {
           setWallet(accounts[0]);
-          setStatus("👆🏽 Write a message in the text-field above.");
         } else {
           setWallet("");
-          setStatus("🦊 Connect to Metamask using the top right button.");
         }
       });
-    } else {
-      setStatus(
-        <p>
-          {" "}
-          🦊{" "}
-          <a target="_blank" href={`https://metamask.io/download.html`}>
-            You must install Metamask, a virtual Ethereum wallet, in your
-            browser.
-          </a>
-        </p>
-      );
     }
   }
 
@@ -52,51 +123,127 @@ const Minter = (props) => {
     setWallet(walletResponse.address);
   };
 
-  const onMintPressed = async () => {
-    const { status } = await mintNFT(url, name, description);
-    setStatus(status);
-  };
-
   return (
-    <div>
-      <br></br>
-      <h1 id="title" className={styles.title}>
-        🧙‍♂️ NFT Minter
-      </h1>
-      <p>
-        Simply add your asset's link, name, and description, then press "Mint."
-      </p>
-      <form>
-        <h2>🖼 Link to asset: </h2>
-        <input
-          type="text"
-          placeholder="e.g. https://gateway.pinata.cloud/ipfs/<hash>"
-          onChange={(event) => setURL(event.target.value)}
-        />
-        <h2>🤔 Name: </h2>
-        <input
-          type="text"
-          placeholder="e.g. My first NFT!"
-          onChange={(event) => setName(event.target.value)}
-        />
-        <h2>✍️ Description: </h2>
-        <input
-          type="text"
-          placeholder="e.g. Even cooler than cryptokitties ;)"
-          onChange={(event) => setDescription(event.target.value)}
-        />
-      </form>
-      <button
-        id="mintButton"
-        className={styles.mintButton}
-        onClick={onMintPressed}
-      >
-        Mint NFT
-      </button>
-      <p id="status" className={styles.status}>
-        {status}
-      </p>
-    </div>
+    <VStack>
+      <FormControl isRequired>
+        <HStack>
+          <Container maxW="container.lg">
+            <h1>Create a new drop here!</h1>
+            <FormLabel htmlFor="drop-name">Drop Name</FormLabel>
+
+            <Input
+              id="drop-name"
+              placeholder="Enter drop name"
+              onChange={(event) => setDropName(event.target.value)}
+            />
+
+            <FormLabel htmlFor="drop-desc">Drop Description</FormLabel>
+
+            <Input
+              id="drop-desc"
+              placeholder="Enter drop desciption"
+              onChange={(event) => setDropDesc(event.target.value)}
+            />
+
+            <FormLabel htmlFor="drop-type">Drop Type</FormLabel>
+            <Select
+              id="droptype"
+              defaultValue="Controlled"
+              onChange={(event) => setDropType(event.target.value)}
+            >
+              <option>Controlled</option>
+              <option>Instant</option>
+            </Select>
+
+            <FormLabel htmlFor="drop-id">Drop ID</FormLabel>
+
+            <Input
+              id="drop-id"
+              placeholder="Enter drop id"
+              onChange={(event) => setDropID(event.target.value)}
+            />
+            <h1>
+              {dropName}
+              <br />
+              {dropDesc}
+              <br />
+              {dropType}
+              <br />
+              {dropID}
+            </h1>
+          </Container>
+
+          <Container maxW="container.lg">
+            <h1>Create an NFT for your drop!</h1>
+            <FormLabel htmlFor="nftname">NFT Name</FormLabel>
+
+            <Input
+              id="nftname"
+              placeholder="🤔 Name:"
+              onChange={(event) => setNftName(event.target.value)}
+            />
+
+            <FormLabel htmlFor="nft-desc">NFT Description</FormLabel>
+
+            <Input
+              id="nft-desc"
+              placeholder="✍️ Description:"
+              onChange={(event) => setNftDescription(event.target.value)}
+            />
+
+            <FormLabel htmlFor="nft-link">NFT Link to Asset</FormLabel>
+            <Input
+              id="nft-url"
+              placeholder="🖼 Link to asset:"
+              onChange={(event) => setNftURL(event.target.value)}
+            />
+
+            <Button
+              mt={4}
+              colorScheme="blue"
+              type="submit"
+              onClick={(e) => uploadToDataBase(e)}
+            >
+              Create NFT Drop
+            </Button>
+
+            <h1>
+              {nftName}
+              <br />
+              {nftDescription}
+              <br />
+              {nftUrl}
+            </h1>
+          </Container>
+          <h1>
+            {walletAddress ? (
+              ""
+            ) : (
+              <p>
+                {" "}
+                🦊{" "}
+                <a target="_blank" href={`https://metamask.io/download.html`}>
+                  You must install Metamask, a virtual Ethereum wallet, in your
+                  browser. Once installed, click the connect button on the top
+                  of the page!
+                </a>
+              </p>
+            )}
+          </h1>
+        </HStack>
+      </FormControl>
+      {resData ? (
+        <Alert status="success">
+          <AlertIcon />
+          Success! NFT Drop was created!
+        </Alert>
+      ) : (
+        <Alert status="info">
+          <AlertIcon />
+          Fill in your NFT drop details and click create to create your drop!
+        </Alert>
+      )}
+    </VStack>
   );
 };
 
