@@ -29,6 +29,7 @@ const Minter = (props) => {
   const provider = "";
   const signer = "";
   const contract = "";
+  const toast = useToast();
 
   const [walletAddress, setWallet] = useState("");
   const [resData, setResData] = useState(false);
@@ -162,15 +163,6 @@ const Minter = (props) => {
               placeholder="Enter drop id"
               onChange={(event) => setDropID(event.target.value)}
             />
-            <h1>
-              {dropName}
-              <br />
-              {dropDesc}
-              <br />
-              {dropType}
-              <br />
-              {dropID}
-            </h1>
           </Container>
 
           <Container maxW="container.lg">
@@ -202,18 +194,19 @@ const Minter = (props) => {
               mt={4}
               colorScheme="blue"
               type="submit"
-              onClick={(e) => uploadToDataBase(e)}
+              onClick={(e) => {
+                uploadToDataBase(e);
+                toast({
+                  title: "NFT Drop Created.",
+                  description: "We've created your nft drop for you.",
+                  status: "success",
+                  duration: 9000,
+                  isClosable: true,
+                });
+              }}
             >
               Create NFT Drop
             </Button>
-
-            <h1>
-              {nftName}
-              <br />
-              {nftDescription}
-              <br />
-              {nftUrl}
-            </h1>
           </Container>
           <h1>
             {walletAddress ? (
