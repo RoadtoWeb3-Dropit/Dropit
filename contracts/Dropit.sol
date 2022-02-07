@@ -51,7 +51,6 @@ contract Dropit is ERC721, ERC721URIStorage, Ownable {
         string memory metadataURI
     ) public payable returns (uint256) {
         require(existingURIs[metadataURI] != 1, 'NFT already minted!');
-        require (msg.value >= 0.05 ether, 'Need to pay up!');
 
         uint256 newItemId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
@@ -72,8 +71,6 @@ contract Dropit is ERC721, ERC721URIStorage, Ownable {
         address[] memory recipients,
         string[] memory metadataArray
     ) public payable {
-        require (msg.value >= recipients.length * 0.05 ether, 'Need to pay up!');
-
         // Loop through and mint
         for (uint i = 0; i < recipients.length; i++) {
             require(existingURIs[metadataArray[i]] != 1, 'NFT already minted!');
