@@ -26,7 +26,10 @@ export default function Home() {
 
   // TODO: Get drop metadata from API, dummy data for now
   const metadata = JSON.stringify({
-    drop: `${drop}`
+    name: "Dropit NFT",
+    desc: "This is a cool NFT!",
+    imgLink: "https://media.giphy.com/media/39GAXpLVKvYRO/giphy.gif",
+    dropId: drop,
   })
 
   // Initialization

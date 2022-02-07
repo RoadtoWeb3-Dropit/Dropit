@@ -24,7 +24,14 @@ export default function Drops({ wallet }) {
         <div>
         {
             availableDrop.length ? availableDrop.map((d) => {
-                return <DropCard name={d.dropName} desc={d.dropDescription} type={d.dropType} status={d.dropStatus}/>
+                return <DropCard
+                    key={d.dropName}
+                    name={d.dropName}
+                    desc={d.dropDescription}
+                    type={d.dropType}
+                    status={d.dropStatus}
+                    assetUrl={d?.metadata?.imgLink}
+                />
             }) 
             : ''
         }
