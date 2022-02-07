@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 
 import Minter from "../src/components/admin/mint-interface/Minter";
+import Drops from "../src/components/admin/drop-interface/Drops";
 import { connectWallet, getCurrentWalletConnected } from "./interact.js";
 import {
   Tabs,
@@ -84,7 +85,7 @@ export default function Dashboard() {
               <Minter></Minter>
             </TabPanel>
             <TabPanel>
-              <p>two!</p>
+              <Drops wallet={walletAddress}/>
             </TabPanel>
             <TabPanel>
               <p>three!</p>
